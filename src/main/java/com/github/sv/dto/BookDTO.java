@@ -14,9 +14,6 @@ public class BookDTO{
     private Boolean availability;
     private Long numberOfPages;
 
-    public Long getId() {
-        return id;
-    }
 
     protected BookDTO() {
     }
@@ -28,11 +25,51 @@ public class BookDTO{
         this.availability = false;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setBookName(String bookName) {
+        this.bookName = bookName;
+    }
+
+    public void setAuthorBook(String authorBook) {
+        this.authorBook = authorBook;
+    }
+
+    public void setAvailability(Boolean availability) {
+        this.availability = availability;
+    }
+
+    public void setNumberOfPages(Long numberOfPages) {
+        this.numberOfPages = numberOfPages;
+    }
+
+    public Long getId() {
+
+        return id;
+    }
+
+    public String getBookName() {
+        return bookName;
+    }
+
+    public String getAuthorBook() {
+        return authorBook;
+    }
+
+    public Boolean getAvailability() {
+        return availability;
+    }
+
+    public Long getNumberOfPages() {
+        return numberOfPages;
+    }
 
     @Override
     public String toString() {
         return bookName + " " + authorBook + " "
                 + numberOfPages + " id=" + id +
-                ", availability=" + availability + '}';
+                ", availability=" + availability;
     }
 }
