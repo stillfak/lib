@@ -19,8 +19,8 @@ import static org.junit.Assert.assertEquals;
 @ActiveProfiles("test")
 @Transactional
 @Rollback
-@SpringBootTest(classes = LibApplication.class)
 @RunWith(SpringJUnit4ClassRunner.class)
+@SpringBootTest(classes = LibApplication.class)
 public class BookLibRestControllerTest {
 
     @Autowired
@@ -35,17 +35,13 @@ public class BookLibRestControllerTest {
     public void getAllBooks() {
         SpringDataWebProperties.Pageable pageable = new SpringDataWebProperties.Pageable();
         ArrayList<BookDTO> books = (ArrayList<BookDTO>) libRestController.getAllBooks(pageable);
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < libRestController.getService().getRepository().count(); i++) {
             assertEquals(books.get(i).getAuthorBook(),"author"+i);
             assertEquals(books.get(i).getBookName(),"book"+i);
             assertEquals(Math.toIntExact(books.get(i).getId()) ,i+1);
             assertEquals(Math.toIntExact(books.get(i).getNumberOfPages()), 600+i);
             assertEquals(books.get(i).getAvailability(),false);
-//                bookRepository.save(new Book("book" + i, (long) 600 + i, "author" + i));
-
         }
-
-
     }
 
     @Test
@@ -60,6 +56,7 @@ public class BookLibRestControllerTest {
 
     @Test
     public void add() {
+
     }
 
     @Test
