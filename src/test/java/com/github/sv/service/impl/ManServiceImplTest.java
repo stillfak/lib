@@ -35,13 +35,10 @@ public class ManServiceImplTest {
     @Test
     public void delete() {
         int count = (int) manService.getRepository().count();
-
         Man man = manService.add(new Man("man 45"));
-
         assertEquals(manService.getRepository().count(), ++count);
-
-        manService.delete(man);
-
+        man = manService.delete(man);
+        assertEquals(man.getLastName(),"man 45");
         assertEquals(manService.getRepository().count(), --count);
     }
 
