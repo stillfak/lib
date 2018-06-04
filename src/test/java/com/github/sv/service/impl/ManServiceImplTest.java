@@ -25,6 +25,11 @@ public class ManServiceImplTest {
 
     @Test
     public void add() {
+        assertEquals(manService.getRepository().count(), 10);
+        Man man = manService.add(new Man("man45"));
+        assertEquals(man.getLastName(), "man45");
+        assertEquals(manService.getRepository().count(), 11);
+
     }
 
     @Test
