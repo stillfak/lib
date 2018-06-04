@@ -21,12 +21,15 @@ public class BookLibRestController {
 
     private ModelMapper modelMapper;
 
+
+
     @Autowired
     public BookLibRestController(BookServiceImpl service) {
         this.service = service;
         this.modelMapper = new ModelMapper();
-        this.modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.LOOSE);
+//        this.modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.LOOSE);
     }
+//    public BookLibRestController() {}
 
     BookServiceImpl getService() {
         return service;
@@ -34,7 +37,7 @@ public class BookLibRestController {
 
     @RequestMapping(value = "/books", method = RequestMethod.GET)
     public List<BookDTO> getAllBooks(SpringDataWebProperties.Pageable pageable) {
-         return service.getRepository().findAll(pageable.getMaxPageSize()).stream().map(this::convertToDto).collect(Collectors.toList());
+        return service.getRepository().findAll(/**pageable.getMaxPageSize()*/).stream().map(this::convertToDto).collect(Collectors.toList());
     }
 
     @RequestMapping(value = "/books/{id}", method = RequestMethod.GET)
@@ -54,10 +57,13 @@ public class BookLibRestController {
     public BookDTO edit(@PathVariable Long id,
                         @RequestBody String name,
                         @RequestBody Long size,
-                        @RequestBody String author) {
+                        @RequestBody String author,
+                        @RequestBody Boolean availability) {
         service.findById(id).get().setBookName(name);
         service.findById(id).get().setAuthorBook(author);
         service.findById(id).get().setNumberOfPages(size);
+        service.findById(id).get().setAvailability(availability);
+
 
         return convertToDto(service.findById(id).get());
     }
