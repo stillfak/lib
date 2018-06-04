@@ -17,7 +17,7 @@ import static org.junit.Assert.assertEquals;
 @Transactional
 @Rollback
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(classes = LibApplication.class)
+@SpringBootTest(classes = TestStart.class)
 public class BookServiceImplTest {
     @Autowired
     private BookServiceImpl bookService;
@@ -25,10 +25,9 @@ public class BookServiceImplTest {
     @Test
     public void add() {
         Book book = bookService.add(new Book("book", (long) 500, "author"));
-        assertEquals(bookService.getRepository().count(), 1);
+        assertEquals(bookService.getRepository().count(), 11);
         assertEquals(book.getBookName(), "book");
         assertEquals(book.getAuthorBook(), "author");
-        assertEquals(Math.toIntExact(book.getId()), 1);
         assertEquals(book.getAvailability(), false);
         assertEquals(Math.toIntExact(book.getNumberOfPages()), 500);
 
@@ -38,17 +37,13 @@ public class BookServiceImplTest {
     @Test
     public void delete() {
         Book book = bookService.add(new Book("book", (long) 500, "author"));
-        assertEquals(bookService.getRepository().count(), 1);
+        assertEquals(bookService.getRepository().count(), 11);
         bookService.delete(book);
-        assertEquals(bookService.getRepository().count(), 0);
+        assertEquals(bookService.getRepository().count(), 10);
     }
 
     @Test
     public void find() {
-        for (int i = 0; i < 10; i++) {
-            bookService.add(new Book("book" + i, (long) 500 + i, "author" + i));
-        }
-
         bookService.find("book1").forEach(book -> {
             assertEquals(book.getAuthorBook(), "author1");
             assertEquals(book.getBookName(), "book1");
@@ -60,9 +55,6 @@ public class BookServiceImplTest {
 
     @Test
     public void findById() {
-        for (int i = 0; i < 10; i++) {
-            bookService.add(new Book("book" + i, (long) 500 + i, "author" + i));
-        }
         Book book = bookService.findById((long) 5).get();
 
         assertEquals(Math.toIntExact(book.getId()), 5);
