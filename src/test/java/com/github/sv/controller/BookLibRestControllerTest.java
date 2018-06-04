@@ -63,7 +63,7 @@ public class BookLibRestControllerTest {
 
     @Test
     public void edit() {
-        BookDTO bookDTO = libRestController.edit((long) 2,"book_6",(long) 660,"author.asd",true);
+        BookDTO bookDTO = libRestController.edit((long) 2, "book_6", (long) 660, "author.asd", true);
 
         assertEquals(bookDTO.getAuthorBook(), "author.asd");
         assertEquals(bookDTO.getBookName(), "book_6");
@@ -73,13 +73,20 @@ public class BookLibRestControllerTest {
 
     @Test
     public void delete() {
+        int count = (int) libRestController.getService().getRepository().count();
+
+        BookDTO bookDTO = libRestController.add("book", (long) 500, "author1");
+        assertEquals(libRestController.getService().getRepository().count(), 1 + count);
+        BookDTO bookDTO1 = libRestController.delete(bookDTO.getId());
+
+        assertEquals(bookDTO.getAvailability(),bookDTO1.getAvailability());
+        assertEquals(bookDTO.getNumberOfPages(),bookDTO1.getNumberOfPages());
+        assertEquals(bookDTO.getId(),bookDTO1.getId());
+        assertEquals(bookDTO.getBookName(),bookDTO1.getBookName());
+        assertEquals(bookDTO.getAuthorBook(),bookDTO1.getAuthorBook());
+
+        assertEquals(libRestController.getService().getRepository().count(), count);
+
     }
 
-    @Test
-    public void convertToDto() {
-    }
-
-    @Test
-    public void convertToEnable() {
-    }
 }
