@@ -18,20 +18,23 @@ import java.util.stream.Collectors;
 public class BookLibRestController {
 
     private final BookServiceImpl service;
+
     private ModelMapper modelMapper;
 
     @Autowired
     public BookLibRestController(BookServiceImpl service) {
         this.service = service;
         this.modelMapper = new ModelMapper();
-//        this.modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.LOOSE);
+        this.modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.LOOSE);
+    }
+
+    BookServiceImpl getService() {
+        return service;
     }
 
     @RequestMapping(value = "/books", method = RequestMethod.GET)
-    public List<BookDTO> getAllBooks(SpringDataWebProperties.Pageable pageable) {//!!!SpringDataWebProperties.Pageable
-        List<Book> books = (List<Book>) service.getRepository().findAll();
-        return books.stream().map(book -> convertToDto(book)).collect(Collectors.toList());
-        //        return (List<BookDTO>) ;
+    public List<BookDTO> getAllBooks(SpringDataWebProperties.Pageable pageable) {
+         return service.getRepository().findAll(pageable.getMaxPageSize()).stream().map(this::convertToDto).collect(Collectors.toList());
     }
 
     @RequestMapping(value = "/books/{id}", method = RequestMethod.GET)
@@ -41,8 +44,8 @@ public class BookLibRestController {
 
     @RequestMapping(value = "/books", method = RequestMethod.POST)
     public BookDTO add(@RequestBody String name,
-                      /** @RequestBody*/ Long size,
-                     /**  @RequestBody*/ String author) {
+                       @RequestBody Long size,
+                       @RequestBody String author) {
         return convertToDto(service.add(new Book(name, size, author)));
 
     }
@@ -50,8 +53,8 @@ public class BookLibRestController {
     @RequestMapping(value = "/books/{id}", method = RequestMethod.PUT)
     public BookDTO edit(@PathVariable Long id,
                         @RequestBody String name,
-                   /**   @RequestBody */Long size,
-                   /**     @RequestBody */String author) {
+                        @RequestBody Long size,
+                        @RequestBody String author) {
         service.findById(id).get().setBookName(name);
         service.findById(id).get().setAuthorBook(author);
         service.findById(id).get().setNumberOfPages(size);
@@ -64,12 +67,13 @@ public class BookLibRestController {
         return convertToDto(service.delete(service.findById(id).get()));
     }
 
-    public BookDTO convertToDto(Book book) {
+    private BookDTO convertToDto(Book book) {
         return modelMapper.map(book, BookDTO.class);
     }
 
-    public Book convertToEnable(BookDTO sourceObject) {
+    private Book convertToEnable(BookDTO sourceObject) {
         return modelMapper.map(sourceObject, Book.class);
     }
+
 
 }
