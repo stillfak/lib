@@ -63,6 +63,12 @@ public class BookLibRestControllerTest {
 
     @Test
     public void edit() {
+        BookDTO bookDTO = libRestController.edit((long) 2,"book_6",(long) 660,"author.asd",true);
+
+        assertEquals(bookDTO.getAuthorBook(), "author.asd");
+        assertEquals(bookDTO.getBookName(), "book_6");
+        assertEquals(Math.toIntExact(bookDTO.getNumberOfPages()), 660);
+        assertEquals(bookDTO.getAvailability(), true);
     }
 
     @Test
