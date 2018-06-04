@@ -47,6 +47,9 @@ public class ManServiceImplTest {
 
     @Test
     public void find() {
+        manService.find("man4").forEach(man ->
+                assertEquals(man.getLastName(),"man4")
+        );
     }
 
     @Test
