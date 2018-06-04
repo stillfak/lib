@@ -49,17 +49,27 @@ public class BookServiceImplTest {
             bookService.add(new Book("book" + i, (long) 500 + i, "author" + i));
         }
 
-        bookService.find("book1").stream().forEach(book -> {
-            assertEquals(book.getAuthorBook(),"author1");
-            assertEquals(book.getBookName(),"book1");
-            assertEquals(Math.toIntExact(book.getNumberOfPages()),501);
-            assertEquals(book.getAvailability(),false);
+        bookService.find("book1").forEach(book -> {
+            assertEquals(book.getAuthorBook(), "author1");
+            assertEquals(book.getBookName(), "book1");
+            assertEquals(Math.toIntExact(book.getNumberOfPages()), 501);
+            assertEquals(book.getAvailability(), false);
         });
 
     }
 
     @Test
     public void findById() {
+        for (int i = 0; i < 10; i++) {
+            bookService.add(new Book("book" + i, (long) 500 + i, "author" + i));
+        }
+        Book book = bookService.findById((long) 5).get();
+
+        assertEquals(Math.toIntExact(book.getId()), 5);
+        assertEquals(book.getBookName(), "book4");
+        assertEquals(Math.toIntExact(book.getNumberOfPages()), 504);
+        assertEquals(book.getAvailability(), false);
+        assertEquals(book.getAuthorBook(), "author4");
 
     }
 }
