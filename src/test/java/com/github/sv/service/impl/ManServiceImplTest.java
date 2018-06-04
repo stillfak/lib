@@ -54,5 +54,9 @@ public class ManServiceImplTest {
 
     @Test
     public void findById() {
+        Man man = manService.findById((long) 15).get();
+        assertEquals(man.getLastName(),"Man4");
+
+
     }
 }
