@@ -21,8 +21,8 @@ public class ManServiceImpl implements ManService {
 
     @Override
     public Man add(Man man) {
-        repository.save(man);
-        return man;
+        return repository.save(man);
+
     }
 
     @Override
