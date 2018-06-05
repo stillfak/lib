@@ -30,8 +30,8 @@ public class BookLibRestControllerTest {
     @Test
     public void getAllBooks() {
         SpringDataWebProperties.Pageable pageable = new SpringDataWebProperties.Pageable();
-        ArrayList<BookDTO> books = (ArrayList<BookDTO>) libRestController.getAllBooks(pageable);
-        for (int i = 0; i < libRestController.getService().getRepository().count(); i++) {
+        ArrayList<BookDTO> books = (ArrayList<BookDTO>) libRestController.getAllBooks();
+        for (int i = 0; i < books.size(); i++) {
             assertEquals(books.get(i).getAuthorBook(), "author" + i);
             assertEquals(books.get(i).getBookName(), "book" + i);
             assertEquals(Math.toIntExact(books.get(i).getId()), i + 1);
