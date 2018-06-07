@@ -27,17 +27,12 @@ public class ManLibRestController {
 
     @RequestMapping(value = "/mans", method = RequestMethod.GET)
     public List<ManDTO> getAllMan() {//SpringDataWebProperties.Pageable pageable
-        return StreamSupport.stream(service.getRepository().findAll().spliterator(),false).map(mapper::convertToDto).collect(Collectors.toList());
+        return StreamSupport.stream(service.getRepository().findAll().spliterator(), false).map(mapper::convertToDto).collect(Collectors.toList());
     }
 
     @RequestMapping(value = "/mans/{id}", method = RequestMethod.GET)
     public ManDTO getMan(@PathVariable Long id) {
         return mapper.convertToDto(service.findById(id).get());
-    }
-
-    @RequestMapping(value = "/mans/{id}/books")
-    public List<BookDTO> getBooksOnHand(@PathVariable Long id){
-        return service.findById(id).get().getBooksOnHand().stream().map(mapper::convertToDto).collect(Collectors.toList());
     }
 
     @RequestMapping(value = "/mans", method = RequestMethod.POST)
@@ -47,9 +42,11 @@ public class ManLibRestController {
 
     @RequestMapping(value = "/mans/{id}", method = RequestMethod.PUT)
     public ManDTO edit(@PathVariable Long id,
-                       @RequestBody String lastName) {
-           service.findById(id).get().setLastName(lastName);
-     return mapper.convertToDto(service.findById(id).get());
+                       @RequestBody String lastName,
+                       @RequestBody List<BookDTO> books) {
+        service.findById(id).get().setBooksOnHand(books.stream().map(mapper::convertToEnable).collect(Collectors.toList()));
+        service.findById(id).get().setLastName(lastName);
+        return mapper.convertToDto(service.findById(id).get());
     }
 
     @RequestMapping(value = "mans/{id}", method = RequestMethod.DELETE)
