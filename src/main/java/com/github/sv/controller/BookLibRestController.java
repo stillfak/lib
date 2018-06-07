@@ -31,7 +31,7 @@ public class BookLibRestController {
 
     @RequestMapping(value = "/books", method = RequestMethod.GET)
     public List<BookDTO> getAllBooks() {//SpringDataWebProperties.Pageable pageable
-        return service.getRepository().findAll().stream().map(book -> mapper.convertToDto(book)).collect(Collectors.toList());
+        return service.getRepository().findAll().stream().map(mapper::convertToDto).collect(Collectors.toList());
     }
 
     @RequestMapping(value = "/books/{id}", method = RequestMethod.GET)
