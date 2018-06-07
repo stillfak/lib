@@ -1,7 +1,7 @@
 package com.github.sv.controller;
 
 import com.github.sv.LibApplication;
-import com.github.sv.dto.ManDTO;
+import com.github.sv.dto.BookDTO;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,11 +43,9 @@ public class ManLibRestControllerTest {
     }
 
     @Test
-    public void getBooksOnHand() {
-    }
-
-    @Test
     public void add() {
+        long id = controller.add("man").getId();
+        assertEquals(controller.getMan(id).getLastName(),"man");
     }
 
     @Test
