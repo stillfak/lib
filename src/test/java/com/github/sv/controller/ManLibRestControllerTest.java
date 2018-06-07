@@ -29,14 +29,17 @@ public class ManLibRestControllerTest {
     @Test
     public void getAllMan() {
         for (int i = 0; i < 10; i++) {
-            controller.add("Man"+i);
+            controller.add("Man" + i);
         }
-        assertEquals(controller.getAllMan().size(),10);
+        assertEquals(controller.getAllMan().size(), 10);
 
     }
 
     @Test
     public void getMan() {
+        long id = controller.add("man").getId();
+
+        assertEquals(controller.getMan(id).getLastName(), "man");
     }
 
     @Test
