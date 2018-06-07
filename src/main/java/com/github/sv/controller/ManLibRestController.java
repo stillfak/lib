@@ -5,17 +5,18 @@ import com.github.sv.dto.ManDTO;
 import com.github.sv.models.Man;
 import com.github.sv.service.impl.ManServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @RestController
 @RequestMapping("lib/libMans")
 public class ManLibRestController {
 
     private final ManServiceImpl service;
+
     private com.github.sv.Mapper.ModelMapper mapper;
 
     @Autowired
@@ -25,8 +26,8 @@ public class ManLibRestController {
     }
 
     @RequestMapping(value = "/mans", method = RequestMethod.GET)
-    public List<ManDTO> getAllMan(SpringDataWebProperties.Pageable pageable) {
-        return service.getRepository().findAll().stream().map(man ->  mapper.convertToDto(man)).collect(Collectors.toList());
+    public List<ManDTO> getAllMan() {//SpringDataWebProperties.Pageable pageable
+        return StreamSupport.stream(service.getRepository().findAll().spliterator(),false).map(mapper::convertToDto).collect(Collectors.toList());
     }
 
     @RequestMapping(value = "/mans/{id}", method = RequestMethod.GET)
@@ -36,7 +37,7 @@ public class ManLibRestController {
 
     @RequestMapping(value = "/mans/{id}/books")
     public List<BookDTO> getBooksOnHand(@PathVariable Long id){
-        return service.findById(id).get().getBooksOnHand().stream().map(book -> mapper.convertToDto(book)).collect(Collectors.toList());
+        return service.findById(id).get().getBooksOnHand().stream().map(mapper::convertToDto).collect(Collectors.toList());
     }
 
     @RequestMapping(value = "/mans", method = RequestMethod.POST)
@@ -48,7 +49,7 @@ public class ManLibRestController {
     public ManDTO edit(@PathVariable Long id,
                        @RequestBody String lastName) {
            service.findById(id).get().setLastName(lastName);
-        return null ;
+     return mapper.convertToDto(service.findById(id).get());
     }
 
     @RequestMapping(value = "mans/{id}", method = RequestMethod.DELETE)
