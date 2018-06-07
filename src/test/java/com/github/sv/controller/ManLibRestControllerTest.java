@@ -50,6 +50,9 @@ public class ManLibRestControllerTest {
 
     @Test
     public void edit() {
+        long id = controller.add("manTest").getId();
+        controller.edit(id,"man",new ArrayList<>());
+        assertEquals(controller.getMan(id).getLastName(),"man");
     }
 
     @Test
