@@ -1,7 +1,6 @@
 package com.github.sv.controller;
 
 import com.github.sv.LibApplication;
-import com.github.sv.dto.BookDTO;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 @ActiveProfiles("test")
 @Transactional
@@ -57,5 +57,8 @@ public class ManLibRestControllerTest {
 
     @Test
     public void delete() {
+        long id = controller.add("delete").getId();
+        controller.delete(id);
+        assertNull(controller.getMan(id));
     }
 }
