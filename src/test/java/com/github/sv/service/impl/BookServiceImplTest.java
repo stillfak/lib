@@ -1,8 +1,7 @@
 package com.github.sv.service.impl;
 
-import com.github.sv.TestStart;
+import com.github.sv.LibApplication;
 import com.github.sv.models.Book;
-import com.github.sv.service.impl.BookServiceImpl;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +17,7 @@ import static org.junit.Assert.assertEquals;
 @Transactional
 @Rollback
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(classes = TestStart.class)
+@SpringBootTest(classes = LibApplication.class)
 public class BookServiceImplTest {
     @Autowired
     private BookServiceImpl bookService;

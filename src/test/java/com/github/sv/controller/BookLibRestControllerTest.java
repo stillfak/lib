@@ -1,6 +1,6 @@
 package com.github.sv.controller;
 
-import com.github.sv.TestStart;
+import com.github.sv.LibApplication;
 import com.github.sv.dto.BookDTO;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,7 +20,7 @@ import static org.junit.Assert.assertEquals;
 @Transactional
 @Rollback
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(classes = TestStart.class)
+@SpringBootTest(classes = LibApplication.class)
 public class BookLibRestControllerTest {
 
     @Autowired
@@ -38,6 +38,7 @@ public class BookLibRestControllerTest {
             assertEquals(Math.toIntExact(books.get(i).getNumberOfPages()), 500 + i);
             assertEquals(books.get(i).getAvailability(), false);
         }
+
     }
 
     @Test
