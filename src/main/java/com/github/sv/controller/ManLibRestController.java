@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -32,7 +33,12 @@ public class ManLibRestController {
 
     @RequestMapping(value = "/mans/{id}", method = RequestMethod.GET)
     public ManDTO getMan(@PathVariable Long id) {
-        return mapper.convertToDto(service.findById(id).get());
+        try {
+            return mapper.convertToDto(service.findById(id).get());
+        } catch (NoSuchElementException e){
+            return null;
+        }
+
     }
 
     @RequestMapping(value = "/mans", method = RequestMethod.POST)
