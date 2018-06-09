@@ -11,7 +11,11 @@ public interface ManService {
 
     Man delete(Man man);
 
+    Man deleteById(Long id);
+
     List<Man> find(String name);
+
+    List<Man> findAll();
 
     Optional<Man> findById(Long id);
 }
