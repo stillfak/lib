@@ -1,18 +1,18 @@
-package com.github.sv.Mapper;
+package com.github.sv.mapper;
 
 import com.github.sv.dto.BookDTO;
 import com.github.sv.dto.ManDTO;
 import com.github.sv.models.Book;
 import com.github.sv.models.Man;
-import org.modelmapper.convention.MatchingStrategies;
+import org.springframework.stereotype.Component;
 
+@Component
 public class ModelMapper {
 
     private org.modelmapper.ModelMapper modelMapper;
 
     public ModelMapper() {
         this.modelMapper = new org.modelmapper.ModelMapper();
-        this.modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.LOOSE);
     }
 
     public ManDTO convertToDto(Man man) {
