@@ -11,18 +11,42 @@ public class Book {
 
     private String bookName;
     private String authorBook;
-    private Boolean availability;
+    @ManyToOne(targetEntity = Man.class)
+    private Man man;
+
     private Long numberOfPages;
 
 
     protected Book() {
+
     }
 
     public Book(String bookName, Long numberOfPages, String authorBook) {
         this.bookName = bookName;
         this.authorBook = authorBook;
         this.numberOfPages = numberOfPages;
-        this.availability = false;
+    }
+
+    public Book(String bookName, Long numberOfPages, String authorBook, Man man) {
+        this.bookName = bookName;
+        this.authorBook = authorBook;
+        this.numberOfPages = numberOfPages;
+        this.man = man;
+    }
+
+    public Book(String bookName, Long numberOfPages, String authorBook, Long id) {
+        this.bookName = bookName;
+        this.authorBook = authorBook;
+        this.numberOfPages = numberOfPages;
+        this.id = id;
+    }
+
+    public Book(String bookName, Long numberOfPages, String authorBook, Long id, Man man) {
+        this.bookName = bookName;
+        this.authorBook = authorBook;
+        this.numberOfPages = numberOfPages;
+        this.id = id;
+        this.man = man;
     }
 
     public Long getId() {
@@ -37,12 +61,12 @@ public class Book {
         return authorBook;
     }
 
-    public Boolean getAvailability() {
-        return availability;
-    }
-
     public Long getNumberOfPages() {
         return numberOfPages;
+    }
+
+    public Man getMan() {
+        return man;
     }
 
     public void setId(Long id) {
@@ -57,18 +81,18 @@ public class Book {
         this.authorBook = authorBook;
     }
 
-    public void setAvailability(Boolean availability) {
-        this.availability = availability;
-    }
-
     public void setNumberOfPages(Long numberOfPages) {
         this.numberOfPages = numberOfPages;
+    }
+
+    public void setMan(Man man) {
+        this.man = man;
     }
 
     @Override
     public String toString() {
         return bookName + " " + authorBook + " "
                 + numberOfPages + " id=" + id +
-                ", availability=" + availability;
+                ", man=" + man;
     }
 }

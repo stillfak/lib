@@ -1,17 +1,12 @@
 package com.github.sv.dto;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+public class BookDTO {
 
-public class BookDTO{
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     private String bookName;
     private String authorBook;
-    private Boolean availability;
+    private ManDTO manDTO;
     private Long numberOfPages;
 
 
@@ -22,7 +17,25 @@ public class BookDTO{
         this.bookName = bookName;
         this.authorBook = authorBook;
         this.numberOfPages = numberOfPages;
-        this.availability = false;
+    }
+
+    public BookDTO(String bookName, Long numberOfPages, String authorBook, Long id) {
+        this.bookName = bookName;
+        this.authorBook = authorBook;
+        this.numberOfPages = numberOfPages;
+        this.id = id;
+    }
+
+    public BookDTO(String bookName, Long numberOfPages, String authorBook, Long id, ManDTO man) {
+        this.bookName = bookName;
+        this.authorBook = authorBook;
+        this.numberOfPages = numberOfPages;
+        this.id = id;
+        this.manDTO = man;
+    }
+
+    public void setManDTO(ManDTO manDTO) {
+        this.manDTO = manDTO;
     }
 
     public void setId(Long id) {
@@ -37,16 +50,16 @@ public class BookDTO{
         this.authorBook = authorBook;
     }
 
-    public void setAvailability(Boolean availability) {
-        this.availability = availability;
-    }
 
     public void setNumberOfPages(Long numberOfPages) {
         this.numberOfPages = numberOfPages;
     }
 
-    public Long getId() {
+    public ManDTO getManDTO() {
+        return manDTO;
+    }
 
+    public Long getId() {
         return id;
     }
 
@@ -58,18 +71,16 @@ public class BookDTO{
         return authorBook;
     }
 
-    public Boolean getAvailability() {
-        return availability;
-    }
 
     public Long getNumberOfPages() {
         return numberOfPages;
     }
 
+
     @Override
     public String toString() {
         return bookName + " " + authorBook + " "
                 + numberOfPages + " id=" + id +
-                ", availability=" + availability;
+                ", Man" + manDTO;
     }
 }
