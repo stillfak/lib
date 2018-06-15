@@ -1,16 +1,13 @@
 package com.github.sv.controller;
 
-import com.github.sv.dto.BookDTO;
 import com.github.sv.dto.ManDTO;
-import com.github.sv.models.Man;
 import com.github.sv.service.impl.ManServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 @RestController
 @RequestMapping("lib/libMans")
@@ -18,41 +15,34 @@ public class ManLibRestController {
 
     private final ManServiceImpl service;
 
-    private com.github.sv.Mapper.ModelMapper mapper;
+    private com.github.sv.mapper.ModelMapper mapper;
 
     @Autowired
     public ManLibRestController(ManServiceImpl service) {
         this.service = service;
-        this.mapper = new com.github.sv.Mapper.ModelMapper();
+        this.mapper = new com.github.sv.mapper.ModelMapper();
     }
 
     @RequestMapping(value = "/mans", method = RequestMethod.GET)
     public List<ManDTO> getAllMan() {//SpringDataWebProperties.Pageable pageable
-        return StreamSupport.stream(service.getRepository().findAll().spliterator(), false).map(mapper::convertToDto).collect(Collectors.toList());
+        return service.findAll().stream().map(mapper::convertToDto).collect(Collectors.toList());
     }
 
     @RequestMapping(value = "/mans/{id}", method = RequestMethod.GET)
     public ManDTO getMan(@PathVariable Long id) {
-        try {
-            return mapper.convertToDto(service.findById(id).get());
-        } catch (NoSuchElementException e){
-            return null;
-        }
-
+        return mapper.convertToDto(service.findById(id).orElseThrow(() -> new UsernameNotFoundException("Username not found")));
     }
 
     @RequestMapping(value = "/mans", method = RequestMethod.POST)
-    public ManDTO add(String lastName) {
-        return mapper.convertToDto(service.add(new Man(lastName)));
+    public ManDTO add(@RequestBody ManDTO newMan) {
+        return mapper.convertToDto(service.add(mapper.convertToEnable(newMan)));
     }
 
     @RequestMapping(value = "/mans/{id}", method = RequestMethod.PUT)
     public ManDTO edit(@PathVariable Long id,
-                       @RequestBody String lastName,
-                       @RequestBody List<BookDTO> books) {
-        service.findById(id).get().setBooksOnHand(books.stream().map(mapper::convertToEnable).collect(Collectors.toList()));
-        service.findById(id).get().setLastName(lastName);
-        return mapper.convertToDto(service.findById(id).get());
+                       @RequestBody ManDTO editMan) {
+        editMan.setId(id);
+        return mapper.convertToDto(service.update(mapper.convertToEnable(editMan)));
     }
 
     @RequestMapping(value = "mans/{id}", method = RequestMethod.DELETE)
