@@ -1,13 +1,12 @@
 package com.github.sv.service.impl;
 
-import com.github.sv.service.BookService;
 import com.github.sv.models.Book;
 import com.github.sv.repository.BookRepository;
+import com.github.sv.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class BookServiceImpl implements BookService {
@@ -31,17 +30,35 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    public Book deleteById(Long id) {
+        Book book = repository.findById(id).get();
+        repository.deleteById(id);
+        return book;
+    }
+
+
+    @Override
     public List<Book> find(String name) {
         return repository.findByBookName(name);
     }
 
     @Override
-    public Optional<Book> findById(Long id) {
-        return repository.findById(id);
+    public List<Book> findAll() {
+        return repository.findAll();
     }
 
-    public BookRepository getRepository() {
-        return repository;
+    @Override
+    public Book findById(Long id) {
+        return repository.findById(id).get();
+    }
+
+    public long getRepositoryCount() {
+        return repository.count();
+    }
+
+
+    public Book update(Book book) {
+        return repository.save(book);
     }
 
 }

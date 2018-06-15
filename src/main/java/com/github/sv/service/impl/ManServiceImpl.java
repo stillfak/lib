@@ -32,8 +32,21 @@ public class ManServiceImpl implements ManService {
     }
 
     @Override
+    public Man deleteById(Long id) {
+        Man deleted = findById(id).get();
+        repository.deleteById(id);
+        return deleted;
+
+    }
+
+    @Override
     public List<Man> find(String name) {
         return repository.findByLastName(name);
+    }
+
+    @Override
+    public List<Man> findAll() {
+        return repository.findAll();
     }
 
     @Override
@@ -41,7 +54,11 @@ public class ManServiceImpl implements ManService {
         return repository.findById(id);
     }
 
-    public ManRepository getRepository() {
-        return repository;
+    public long getRepositoryCount() {
+        return repository.count();
+    }
+
+    public Man update(Man man){
+        return repository.save(man);
     }
 }
