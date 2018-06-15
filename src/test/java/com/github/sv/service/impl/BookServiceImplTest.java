@@ -25,10 +25,10 @@ public class BookServiceImplTest {
     @Test
     public void add() {
         Book book = bookService.add(new Book("book", (long) 500, "author"));
-        assertEquals(bookService.getRepository().count(), 11);
+        assertEquals(bookService.getRepositoryCount(), 1);
         assertEquals(book.getBookName(), "book");
         assertEquals(book.getAuthorBook(), "author");
-        assertEquals(book.getAvailability(), false);
+//        assertEquals(book.getAvailability(), false);
         assertEquals(Math.toIntExact(book.getNumberOfPages()), 500);
 
 
@@ -37,9 +37,9 @@ public class BookServiceImplTest {
     @Test
     public void delete() {
         Book book = bookService.add(new Book("book", (long) 500, "author"));
-        assertEquals(bookService.getRepository().count(), 11);
+        assertEquals(bookService.getRepositoryCount(), 1);
         bookService.delete(book);
-        assertEquals(bookService.getRepository().count(), 10);
+        assertEquals(bookService.getRepositoryCount(), 0);
     }
 
     @Test
@@ -48,20 +48,32 @@ public class BookServiceImplTest {
             assertEquals(book.getAuthorBook(), "author1");
             assertEquals(book.getBookName(), "book1");
             assertEquals(Math.toIntExact(book.getNumberOfPages()), 501);
-            assertEquals(book.getAvailability(), false);
+//            assertEquals(book.getAvailability(), false);
         });
-
     }
 
-    @Test
+        @Test
     public void findById() {
-        Book book = bookService.findById((long) 5).get();
+        long id = bookService.add(new Book("book",(long) 666,"author")).getId();
+        Book book = bookService.findById(id);
 
-        assertEquals(Math.toIntExact(book.getId()), 5);
-        assertEquals(book.getBookName(), "book4");
-        assertEquals(Math.toIntExact(book.getNumberOfPages()), 504);
-        assertEquals(book.getAvailability(), false);
-        assertEquals(book.getAuthorBook(), "author4");
+        assertEquals(book.getBookName(), "book");
+        assertEquals(Math.toIntExact(book.getNumberOfPages()), 666);
+//        assertEquals(book.getAvailability(), false);
+        assertEquals(book.getAuthorBook(), "author");
+
+    }
+    @Test
+    public void update() {
+        Book book = bookService.add(new Book("", (long) 0, ""));
+        book.setNumberOfPages((long) 1234567);
+        book.setAuthorBook("author");
+        book.setBookName("r2d2");
+        book = bookService.update(book);
+
+        assertEquals(book.getBookName(),"r2d2");
+        assertEquals(book.getAuthorBook(),"author");
+        assertEquals(Math.toIntExact(book.getNumberOfPages()),1234567);
 
     }
 }
