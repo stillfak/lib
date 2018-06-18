@@ -1,6 +1,7 @@
 package com.github.sv.controller;
 
 import com.github.sv.dto.ManDTO;
+import com.github.sv.mapper.ModelMapper;
 import com.github.sv.service.impl.ManServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -15,12 +16,12 @@ public class ManLibRestController {
 
     private final ManServiceImpl service;
 
-    private com.github.sv.mapper.ModelMapper mapper;
+    private ModelMapper mapper;
 
     @Autowired
     public ManLibRestController(ManServiceImpl service) {
         this.service = service;
-        this.mapper = new com.github.sv.mapper.ModelMapper();
+        this.mapper = new ModelMapper();
     }
 
     @RequestMapping(value = "/mans", method = RequestMethod.GET)
@@ -50,5 +51,9 @@ public class ManLibRestController {
         return mapper.convertToDto(service.delete(service.findById(id).get()));
     }
 
+//    @RequestMapping(value = "/mans",method = RequestMethod.GET)
+    public long getNumElemDB(){
+        return service.getNumElemBD();
+    }
 
 }
