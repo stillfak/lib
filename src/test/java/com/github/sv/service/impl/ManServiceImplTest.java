@@ -23,24 +23,24 @@ public class ManServiceImplTest {
     @Autowired
     private ManServiceImpl manService;
 
-//    @Test
-//    public void add() {
-//        assertEquals(manService.getRepository().count(), 0);
-//        Man man = manService.add(new Man("man45"));
-//        assertEquals(man.getLastName(), "man45");
-//        assertEquals(manService.getRepository().count(), 1);
-//
-//    }
-//
-//    @Test
-//    public void delete() {
-//        int count = (int) manService.getRepository().count();
-//        Man man = manService.add(new Man("man 45"));
-//        assertEquals(manService.getRepository().count(), count + 1);
-//        man = manService.delete(man);
-//        assertEquals(man.getLastName(), "man 45");
-//        assertEquals(manService.getRepository().count(), count);
-//    }
+    @Test
+    public void add() {
+        assertEquals(manService.count(), 0);
+        Man man = manService.add(new Man("man45"));
+        assertEquals(man.getLastName(), "man45");
+        assertEquals(manService.count(), 1);
+
+    }
+
+    @Test
+    public void delete() {
+        int count = (int) manService.count();
+        Man man = manService.add(new Man("man 45"));
+        assertEquals(manService.count(), count + 1);
+        manService.deleteById(man.getId());
+        assertEquals(man.getLastName(), "man 45");
+        assertEquals(manService.count(), count);
+    }
 
     @Test
     public void find() {
@@ -51,7 +51,7 @@ public class ManServiceImplTest {
     @Test
     public void findById() {
         long id = manService.add(new Man("man")).getId();
-        assertEquals(manService.findById(id).get().getLastName(), "man");
+        assertEquals(manService.findById(id).getLastName(), "man");
 
 
     }

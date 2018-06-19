@@ -25,7 +25,7 @@ public class BookServiceImplTest {
     @Test
     public void add() {
         Book book = bookService.add(new Book("book", (long) 500, "author"));
-        assertEquals(bookService.getRepositoryCount(), 1);
+        assertEquals(bookService.count(), 1);
         assertEquals(book.getBookName(), "book");
         assertEquals(book.getAuthorBook(), "author");
 //        assertEquals(book.getAvailability(), false);
@@ -37,9 +37,9 @@ public class BookServiceImplTest {
     @Test
     public void delete() {
         Book book = bookService.add(new Book("book", (long) 500, "author"));
-        assertEquals(bookService.getRepositoryCount(), 1);
-        bookService.delete(book);
-        assertEquals(bookService.getRepositoryCount(), 0);
+        assertEquals(bookService.count(), 1);
+        bookService.deleteById(book.getId());
+        assertEquals(bookService.count(), 0);
     }
 
     @Test

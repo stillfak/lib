@@ -14,9 +14,8 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 @ActiveProfiles("test")
 @Transactional
@@ -35,7 +34,6 @@ public class ModelMapperTest {
         assertEquals(bookDTO.getBookName(),"book");
         assertEquals(Math.toIntExact(bookDTO.getNumberOfPages()),500);
         assertEquals(bookDTO.getAuthorBook(), "author");
-        assertEquals(bookDTO.getAvailability(),false);
     }
 
     @Test
@@ -51,16 +49,19 @@ public class ModelMapperTest {
     @Test
     public void convertToDto1() {
         ManDTO manDTO = mapper.convertToDto(new Man("Man"));
-        System.out.println(manDTO);
+//        System.out.println(manDTO);
         assertEquals(manDTO.getLastName(),"Man");
-        assertEquals(manDTO.getBooksOnHand(),new ArrayList<BookDTO>());
+//        assertEquals(manDTO.getBooksOnHand(),new ArrayList<BookDTO>());
+        assertNull(manDTO.getBooksOnHand());
+
     }
 
     @Test
     public void convertToEnable1() {
         Man man = mapper.convertToEnable(new ManDTO("Man"));
-        System.out.println(man);
+//        System.out.println(man);
         assertEquals(man.getLastName(),"Man");
-        assertEquals(man.getBooksOnHand(),new ArrayList<>());
+//        assertEquals(man.getBooksOnHand(),new ArrayList<>());
+        assertNull(man.getBooksOnHand());
     }
 }

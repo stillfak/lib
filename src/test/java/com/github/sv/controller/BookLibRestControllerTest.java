@@ -5,8 +5,8 @@ import com.github.sv.dto.BookDTO;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.querydsl.QPageRequest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 @ActiveProfiles("test")
 @Transactional
@@ -27,27 +28,26 @@ public class BookLibRestControllerTest {
     private BookLibRestController libRestController;
 
 
+    private QPageRequest pageable = new QPageRequest(0, 20);
+
     @Test
     public void getAllBooks() {
-        SpringDataWebProperties.Pageable pageable = new SpringDataWebProperties.Pageable();
-        ArrayList<BookDTO> books = (ArrayList<BookDTO>) libRestController.getAllBooks();
-        for (int i = 0; i < books.size(); i++) {
-            assertEquals(books.get(i).getAuthorBook(), "author" + i);
-            assertEquals(books.get(i).getBookName(), "book" + i);
-            assertEquals(Math.toIntExact(books.get(i).getId()), i + 1);
-            assertEquals(Math.toIntExact(books.get(i).getNumberOfPages()), 500 + i);
-            assertEquals(books.get(i).getAvailability(), false);
+        for (int i = 0; i < 21; i++) {
+            libRestController.add(new BookDTO("book " + i, (long) 500 + i, "author " + i));
         }
+        ArrayList<BookDTO> books = (ArrayList<BookDTO>) libRestController.getAllBooks(pageable);
+        assertNotEquals(books.size(), 0);
 
     }
 
     @Test
     public void getBook() {
-        BookDTO bookDTO = libRestController.add( new BookDTO("book2",(long) 502,"author2"));
+        long id = libRestController.add(new BookDTO("book2", (long) 502, "author2")).getId();
+
+        BookDTO bookDTO = libRestController.getBook(id);
         assertEquals(bookDTO.getAuthorBook(), "author2");
         assertEquals(bookDTO.getBookName(), "book2");
         assertEquals(Math.toIntExact(bookDTO.getNumberOfPages()), 502);
-        assertEquals(bookDTO.getAvailability(), false);
     }
 
     @Test
@@ -57,13 +57,12 @@ public class BookLibRestControllerTest {
         assertEquals(bookDTO.getAuthorBook(), "author51");
         assertEquals(bookDTO.getBookName(), "Book1");
         assertEquals(Math.toIntExact(bookDTO.getNumberOfPages()), 500);
-        assertEquals(bookDTO.getAvailability(), false);
 
     }
 
     @Test
     public void edit() {
-        BookDTO bookDTO1 = libRestController.add(new BookDTO("",(long) 0,""));
+        BookDTO bookDTO1 = libRestController.add(new BookDTO("", (long) 0, ""));
 
         bookDTO1.setBookName("book");
         bookDTO1.setAuthorBook("author1");
@@ -71,9 +70,9 @@ public class BookLibRestControllerTest {
 
         long id = bookDTO1.getId();
 
-        BookDTO bookDTO = libRestController.edit(id,bookDTO1);
+        BookDTO bookDTO = libRestController.edit(id, bookDTO1);
 
-        assertEquals(Math.toIntExact(bookDTO.getId()),id);
+        assertEquals(Math.toIntExact(bookDTO.getId()), id);
         assertEquals(bookDTO.getAuthorBook(), "author1");
         assertEquals(bookDTO.getBookName(), "book");
         assertEquals(Math.toIntExact(bookDTO.getNumberOfPages()), 500);
@@ -82,20 +81,13 @@ public class BookLibRestControllerTest {
 
     @Test
     public void delete() {
-        int count = (int) libRestController.getService().getRepositoryCount();
+        long count = libRestController.count();
 
         BookDTO bookDTO = libRestController.add(new BookDTO("book", (long) 500, "author1"));
-        assertEquals(libRestController.getService().getRepositoryCount(), 1 + count);
-        BookDTO bookDTO1 = libRestController.delete(bookDTO.getId());
-
-        assertEquals(bookDTO.getAvailability(),bookDTO1.getAvailability());
-        assertEquals(bookDTO.getNumberOfPages(),bookDTO1.getNumberOfPages());
-        assertEquals(bookDTO.getId(),bookDTO1.getId());
-        assertEquals(bookDTO.getBookName(),bookDTO1.getBookName());
-        assertEquals(bookDTO.getAuthorBook(),bookDTO1.getAuthorBook());
-
-        assertEquals(libRestController.getService().getRepositoryCount(), count);
-
+        assertEquals(Math.toIntExact(libRestController.count()), 1 + count);
+        assertEquals(libRestController.delete(bookDTO.getId()), "Успешно");
+        assertEquals(Math.toIntExact(libRestController.count()), count);
+        System.out.println(libRestController.delete((long) 999));
     }
 
 }
