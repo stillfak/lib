@@ -64,6 +64,12 @@
             <version>5.0.6.RELEASE</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>com.querydsl</groupId>
+            <artifactId>querydsl-jpa</artifactId>
+            <version>4.0.3</version>
+        </dependency>
+
     </dependencies>
 
     <build>
