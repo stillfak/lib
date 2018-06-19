@@ -19,6 +19,7 @@ public class ModelMapper {
         if (man.getBooksOnHand() == null) {
             return new ManDTO(
                     man.getLastName(),
+                    null,
                     man.getId());
         } else if (man.getId() == null) {
             return new ManDTO(
@@ -26,9 +27,15 @@ public class ModelMapper {
                     man.getBooksOnHand().
                             stream().
                             map(this::convertToDto).
-                            collect(Collectors.toList()));
+                            collect(Collectors.toList()),
+                    null
+            );
         } else if (man.getId() == null && man.getBooksOnHand() == null) {
-            return new ManDTO(man.getLastName());
+            return new ManDTO(
+                    man.getLastName(),
+                    null,
+                    null
+            );
         }
 
         return new ManDTO(
@@ -45,7 +52,9 @@ public class ModelMapper {
         if (sourceObject.getBooksOnHand() == null) {
             return new Man(
                     sourceObject.getLastName(),
+                    null,
                     sourceObject.getId());
+
         } else if (sourceObject.getId() == null) {
             return new Man(
                     sourceObject.getLastName(),
@@ -53,9 +62,14 @@ public class ModelMapper {
                             getBooksOnHand().
                             stream().
                             map(this::convertToEnable).
-                            collect(Collectors.toList()));
+                            collect(Collectors.toList()),
+                    null);
         } else if (sourceObject.getId() == null && sourceObject.getBooksOnHand() == null) {
-            return new Man(sourceObject.getLastName());
+            return new Man(
+                    sourceObject.getLastName(),
+                    null,
+                    null
+            );
         }
         return new Man(
                 sourceObject.getLastName(),
@@ -70,17 +84,24 @@ public class ModelMapper {
 
     public BookDTO convertToDto(Book book) {
         if (book.getMan() == null) {
-            return new BookDTO(book.getBookName(),
+            return new BookDTO(
+                    book.getBookName(),
                     book.getNumberOfPages(),
                     book.getAuthorBook(),
-                    book.getId());
+                    book.getId(),
+                    null);
+
 
         } else if (book.getId() == null) {
-            return new BookDTO(book.getBookName(),
+            return new BookDTO(
+                    book.getBookName(),
                     book.getNumberOfPages(),
-                    book.getAuthorBook());
+                    book.getAuthorBook(),
+                    null,
+                    null);
         }
-        return new BookDTO(book.getBookName(),
+        return new BookDTO(
+                book.getBookName(),
                 book.getNumberOfPages(),
                 book.getAuthorBook(),
                 book.getId(),
@@ -89,15 +110,24 @@ public class ModelMapper {
 
     public Book convertToEnable(BookDTO bookDTO) {
         if (bookDTO.getManDTO() == null) {
-            return new Book(bookDTO.getBookName(),
+            return new Book(
+                    bookDTO.getBookName(),
                     bookDTO.getNumberOfPages(),
-                    bookDTO.getAuthorBook(), bookDTO.getId());
+                    bookDTO.getAuthorBook(),
+                    bookDTO.getId(),
+                    null
+
+            );
         } else if (bookDTO.getId() == null) {
-            return new Book(bookDTO.getBookName(),
+            return new Book(
+                    bookDTO.getBookName(),
                     bookDTO.getNumberOfPages(),
-                    bookDTO.getAuthorBook());
+                    bookDTO.getAuthorBook(),
+                    null,
+                    null);
         }
-        return new Book(bookDTO.getBookName(),
+        return new Book(
+                bookDTO.getBookName(),
                 bookDTO.getNumberOfPages(),
                 bookDTO.getAuthorBook(),
                 bookDTO.getId(),
