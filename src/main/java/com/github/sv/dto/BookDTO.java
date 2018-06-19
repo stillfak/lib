@@ -9,21 +9,10 @@ public class BookDTO {
     private ManDTO manDTO;
     private Long numberOfPages;
 
-
-    protected BookDTO() {
-    }
-
     public BookDTO(String bookName, Long numberOfPages, String authorBook) {
         this.bookName = bookName;
         this.authorBook = authorBook;
         this.numberOfPages = numberOfPages;
-    }
-
-    public BookDTO(String bookName, Long numberOfPages, String authorBook, Long id) {
-        this.bookName = bookName;
-        this.authorBook = authorBook;
-        this.numberOfPages = numberOfPages;
-        this.id = id;
     }
 
     public BookDTO(String bookName, Long numberOfPages, String authorBook, Long id, ManDTO man) {
@@ -81,6 +70,6 @@ public class BookDTO {
     public String toString() {
         return bookName + " " + authorBook + " "
                 + numberOfPages + " id=" + id +
-                ", Man" + manDTO;
+                ", Man " + manDTO;
     }
 }

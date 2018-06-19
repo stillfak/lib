@@ -27,20 +27,6 @@ public class Book {
         this.numberOfPages = numberOfPages;
     }
 
-    public Book(String bookName, Long numberOfPages, String authorBook, Man man) {
-        this.bookName = bookName;
-        this.authorBook = authorBook;
-        this.numberOfPages = numberOfPages;
-        this.man = man;
-    }
-
-    public Book(String bookName, Long numberOfPages, String authorBook, Long id) {
-        this.bookName = bookName;
-        this.authorBook = authorBook;
-        this.numberOfPages = numberOfPages;
-        this.id = id;
-    }
-
     public Book(String bookName, Long numberOfPages, String authorBook, Long id, Man man) {
         this.bookName = bookName;
         this.authorBook = authorBook;

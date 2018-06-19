@@ -25,10 +25,6 @@ public class Man {
         this.lastName = lastName;
     }
 
-    public Man(String lastName, List<Book> books) {
-        this.lastName = lastName;
-        this.booksOnHand = books;
-    }
 
     public Man(String lastName, List<Book> books, Long id) {
         this.lastName = lastName;
@@ -36,10 +32,7 @@ public class Man {
         this.id = id;
     }
 
-    public Man(String lastName, Long id) {
-        this.lastName = lastName;
-        this.id = id;
-    }
+
 
 
     public Long getId() {
