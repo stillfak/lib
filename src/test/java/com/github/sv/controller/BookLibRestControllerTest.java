@@ -1,21 +1,31 @@
 package com.github.sv.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.sv.LibApplication;
 import com.github.sv.dto.BookDTO;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.querydsl.QPageRequest;
+import org.springframework.http.MediaType;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.WebApplicationContext;
 
-import java.util.ArrayList;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 @ActiveProfiles("test")
 @Transactional
@@ -27,67 +37,88 @@ public class BookLibRestControllerTest {
     @Autowired
     private BookLibRestController libRestController;
 
+    @Autowired
+    private WebApplicationContext wac;
+    private MockMvc mvc;
 
-    private QPageRequest pageable = new QPageRequest(0, 20);
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
-    @Test
-    public void getAllBooks() {
-        for (int i = 0; i < 21; i++) {
-            libRestController.add(new BookDTO("book " + i, (long) 500 + i, "author " + i));
-        }
-        ArrayList<BookDTO> books = (ArrayList<BookDTO>) libRestController.getAllBooks(pageable);
-        assertNotEquals(books.size(), 0);
 
+    @Before
+    public void setup() {
+        this.mvc = MockMvcBuilders
+                .webAppContextSetup(wac)
+//                .standaloneSetup(libRestController)
+                .build();
     }
 
     @Test
-    public void getBook() {
+    public void getAllBooks() throws Exception {
+        mvc.perform(get("/lib/books"))
+                .andExpect(jsonPath("$.*").value(hasSize(20)));
+//                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
+    public void getBook() throws Exception {
         long id = libRestController.add(new BookDTO("book2", (long) 502, "author2")).getId();
 
-        BookDTO bookDTO = libRestController.getBook(id);
-        assertEquals(bookDTO.getAuthorBook(), "author2");
-        assertEquals(bookDTO.getBookName(), "book2");
-        assertEquals(Math.toIntExact(bookDTO.getNumberOfPages()), 502);
+        mvc.perform(get("/lib/books/" + id))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(jsonPath("$.id").value(id))
+                .andExpect(jsonPath("$.name").value("book2"))
+                .andExpect(jsonPath("$.author").value("author2"))
+                .andExpect(jsonPath("$.numberOfPages").value(502))
+                .andDo(MockMvcResultHandlers.print());
     }
 
     @Test
-    public void add() {
-        BookDTO bookDTO = libRestController.add(new BookDTO("Book1", (long) 500, "author51"));
+    public void add() throws Exception {
 
-        assertEquals(bookDTO.getAuthorBook(), "author51");
-        assertEquals(bookDTO.getBookName(), "Book1");
-        assertEquals(Math.toIntExact(bookDTO.getNumberOfPages()), 500);
+        BookDTO bookDTO = new BookDTO("Book1", 500L, "author51");
+//        System.out.println(objectMapper.writeValueAsString(bookDTO));
+        MockHttpServletRequestBuilder requestBuilder =
+                MockMvcRequestBuilders
+                        .post("/lib/books")
+                        .content(objectMapper.writeValueAsString(bookDTO))
+                        .accept(MediaType.APPLICATION_JSON_UTF8)
+                        .contentType(MediaType.APPLICATION_JSON_UTF8);
+
+        mvc.perform(requestBuilder)
+                .andExpect(jsonPath("$.name", is("Book1")))
+                .andExpect(jsonPath("$.numberOfPages", is(500)))
+                .andExpect(jsonPath("$.author", is("author51")));
+//                .andDo(print());
+//        mvc.perform(get("http://localhost:8080/lib/books/100")).andDo(print());
 
     }
 
     @Test
-    public void edit() {
-        BookDTO bookDTO1 = libRestController.add(new BookDTO("", (long) 0, ""));
+    public void edit() throws Exception {
+        BookDTO bookDTO = libRestController.add(new BookDTO("", (long) 0, ""));
 
-        bookDTO1.setBookName("book");
-        bookDTO1.setAuthorBook("author1");
-        bookDTO1.setNumberOfPages((long) 500);
+        bookDTO.setName("book");
+        bookDTO.setAuthor("author1");
+        bookDTO.setNumberOfPages((long) 500);
+        long id = bookDTO.getId();
 
-        long id = bookDTO1.getId();
-
-        BookDTO bookDTO = libRestController.edit(id, bookDTO1);
-
-        assertEquals(Math.toIntExact(bookDTO.getId()), id);
-        assertEquals(bookDTO.getAuthorBook(), "author1");
-        assertEquals(bookDTO.getBookName(), "book");
-        assertEquals(Math.toIntExact(bookDTO.getNumberOfPages()), 500);
-//        assertEquals(bookDTO.getAvailability(), true);
+        mvc.perform(put("/lib/books/" + id)
+                .content(objectMapper.writeValueAsString(bookDTO))
+                .accept(MediaType.APPLICATION_JSON_UTF8)
+                .contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(jsonPath("$.name", is("book")))
+                .andExpect(jsonPath("$.author", is("author1")))
+                .andExpect(jsonPath("$.numberOfPages", is(500)));
+//                .andDo(print());
     }
 
     @Test
-    public void delete() {
-        long count = libRestController.count();
+    public void delete() throws Exception {
+        long id = libRestController.add(new BookDTO("book", (long) 500, "author1")).getId();
 
-        BookDTO bookDTO = libRestController.add(new BookDTO("book", (long) 500, "author1"));
-        assertEquals(Math.toIntExact(libRestController.count()), 1 + count);
-        assertEquals(libRestController.delete(bookDTO.getId()), "Успешно");
-        assertEquals(Math.toIntExact(libRestController.count()), count);
-        System.out.println(libRestController.delete((long) 999));
+        mvc.perform(MockMvcRequestBuilders.delete("/lib/books/" + id))
+                .andExpect(jsonPath("$", is("Успешно")));
+//              .andDo(print());
     }
 
 }
