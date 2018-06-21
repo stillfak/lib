@@ -54,14 +54,17 @@ public class BookLibRestControllerTest {
 
     @Test
     public void getAllBooks() throws Exception {
-        mvc.perform(get("/lib/books"))
-                .andExpect(jsonPath("$.*").value(hasSize(20)));
-//                .andDo(MockMvcResultHandlers.print());
+        mvc.perform(get("/lib/books")
+                        .param("page","2")
+                        .param("size","30")
+                )
+                .andExpect(jsonPath("$.*").value(hasSize(30)))
+                .andDo(MockMvcResultHandlers.print());
     }
 
     @Test
     public void getBook() throws Exception {
-        long id = libRestController.add(new BookDTO("book2", (long) 502, "author2")).getId();
+        long id = libRestController.add(new BookDTO("book2", 502L, "author2")).getId();
 
         mvc.perform(get("/lib/books/" + id))
                 .andExpect(MockMvcResultMatchers.status().isOk())
@@ -95,11 +98,11 @@ public class BookLibRestControllerTest {
 
     @Test
     public void edit() throws Exception {
-        BookDTO bookDTO = libRestController.add(new BookDTO("", (long) 0, ""));
+        BookDTO bookDTO = libRestController.add(new BookDTO("",  0L, ""));
 
         bookDTO.setName("book");
         bookDTO.setAuthor("author1");
-        bookDTO.setNumberOfPages((long) 500);
+        bookDTO.setNumberOfPages(500L);
         long id = bookDTO.getId();
 
         mvc.perform(put("/lib/books/" + id)
@@ -114,7 +117,7 @@ public class BookLibRestControllerTest {
 
     @Test
     public void delete() throws Exception {
-        long id = libRestController.add(new BookDTO("book", (long) 500, "author1")).getId();
+        long id = libRestController.add(new BookDTO("book", 500L, "author1")).getId();
 
         mvc.perform(MockMvcRequestBuilders.delete("/lib/books/" + id))
                 .andExpect(jsonPath("$", is("Успешно")));

@@ -2,6 +2,7 @@ package com.github.sv.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.sv.LibApplication;
+import com.github.sv.dto.BookDTO;
 import com.github.sv.dto.ManDTO;
 import org.junit.Before;
 import org.junit.Test;
@@ -53,8 +54,10 @@ public class ManLibRestControllerTest {
 
     @Test
     public void getAllMan() throws Exception {
-        mvc.perform(get("/lib/mans"))
-                .andExpect(jsonPath("$.*").value(hasSize(20)));
+        mvc.perform(get("/lib/mans")
+                .param("page","2")
+                .param("size","30"))
+                .andExpect(jsonPath("$.*").value(hasSize(30)));
 
     }
 
@@ -76,19 +79,24 @@ public class ManLibRestControllerTest {
     }
 
     @Test
-    public void edit() throws Exception {
+    public void edit() {
         ManDTO man = controller.add(new ManDTO("sourceMan"));
 
         man.setBooksOnHand(new ArrayList<>());
         man.setLastName("man");
+        man.getBooksOnHand().add(new BookDTO("",300L,""));
 
-        mvc.perform(put("/lib/mans/" + man.getId())
-                .content(objectMapper.writeValueAsString(man))
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .accept(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(jsonPath("$.lastName").value("man"))
-                .andExpect(jsonPath("$.booksOnHand").value(new ArrayList<>()))
-                .andDo(print());
+        try {
+            mvc.perform(put("/lib/mans/" + man.getId())
+                    .content(objectMapper.writeValueAsString(man))
+                    .contentType(MediaType.APPLICATION_JSON_UTF8)
+                    .accept(MediaType.APPLICATION_JSON_UTF8))
+                    .andExpect(jsonPath("$.lastName").value("man"))
+                    .andExpect(jsonPath("$.booksOnHand").value(hasSize(1)))
+                    .andDo(print());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Test
