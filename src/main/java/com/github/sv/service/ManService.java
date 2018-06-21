@@ -1,21 +1,20 @@
 package com.github.sv.service;
 
 import com.github.sv.models.Man;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface ManService {
 
     Man add(Man man);
 
-    Man delete(Man man);
-
-    Man deleteById(Long id);
+    void deleteById(Long id);
 
     List<Man> find(String name);
 
-    List<Man> findAll();
+    Page<Man> findAll(Pageable pageable);
 
-    Optional<Man> findById(Long id);
+    Man findById(Long id);
 }

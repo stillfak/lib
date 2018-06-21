@@ -1,9 +1,12 @@
 package com.github.sv.service.impl;
 
+import com.github.sv.exception.NotFoundException;
 import com.github.sv.models.Book;
 import com.github.sv.repository.BookRepository;
 import com.github.sv.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,17 +26,10 @@ public class BookServiceImpl implements BookService {
         return repository.save(book);
     }
 
-    @Override
-    public Book delete(Book book) {
-        repository.delete(book);
-        return book;
-    }
 
     @Override
-    public Book deleteById(Long id) {
-        Book book = repository.findById(id).get();
+    public void deleteById(Long id) {
         repository.deleteById(id);
-        return book;
     }
 
 
@@ -43,16 +39,16 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public List<Book> findAll() {
-        return repository.findAll();
+    public Page<Book> findAll(Pageable pageable) {
+        return repository.findAll(pageable);
     }
 
     @Override
     public Book findById(Long id) {
-        return repository.findById(id).get();
+        return repository.findById(id).orElseThrow(() -> new NotFoundException(404));
     }
 
-    public long getRepositoryCount() {
+    public long count() {
         return repository.count();
     }
 

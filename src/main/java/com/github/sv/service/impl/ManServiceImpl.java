@@ -1,13 +1,15 @@
 package com.github.sv.service.impl;
 
+import com.github.sv.exception.NotFoundException;
 import com.github.sv.models.Man;
 import com.github.sv.service.ManService;
 import com.github.sv.repository.ManRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ManServiceImpl implements ManService {
@@ -26,17 +28,8 @@ public class ManServiceImpl implements ManService {
     }
 
     @Override
-    public Man delete(Man man) {
-        repository.delete(man);
-        return man;
-    }
-
-    @Override
-    public Man deleteById(Long id) {
-        Man deleted = findById(id).get();
+    public void deleteById(Long id) {
         repository.deleteById(id);
-        return deleted;
-
     }
 
     @Override
@@ -45,20 +38,20 @@ public class ManServiceImpl implements ManService {
     }
 
     @Override
-    public List<Man> findAll() {
-        return repository.findAll();
+    public Page<Man> findAll(Pageable pageable) {
+        return repository.findAll(pageable);
     }
 
     @Override
-    public Optional<Man> findById(Long id) {
-        return repository.findById(id);
+    public Man findById(Long id) {
+        return repository.findById(id).orElseThrow(() -> new NotFoundException(404));
     }
 
-    public long getRepositoryCount() {
+    public long count() {
         return repository.count();
     }
 
-    public Man update(Man man){
+    public Man update(Man man) {
         return repository.save(man);
     }
 }

@@ -1,20 +1,19 @@
 package com.github.sv.service;
 
 import com.github.sv.models.Book;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface BookService {
     Book add(Book book);
 
-
-    Book delete(Book book);
-
+    void deleteById(Long id);
 
     List<Book> find(String name);
 
-    List<Book> findAll();
+    Page<Book> findAll(Pageable pageable);
 
     Book findById(Long id);
 }
