@@ -10,24 +10,18 @@ public class ManDTO {
 
     private List<BookDTO> booksOnHand; // books id
 
-
-    protected ManDTO() {
+    public ManDTO() {
     }
-
 
     public ManDTO(String lastName) {
         this.lastName = lastName;
     }
-
-
 
     public ManDTO(String lastName, List<BookDTO> booksOnHand, Long id) {
         this.booksOnHand = booksOnHand;
         this.lastName = lastName;
         this.id = id;
     }
-
-
 
     public Long getId() {
         return id;
@@ -36,7 +30,6 @@ public class ManDTO {
     public String getLastName() {
         return lastName;
     }
-
 
     public void setId(Long id) {
         this.id = id;
