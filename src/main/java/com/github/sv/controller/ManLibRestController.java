@@ -6,6 +6,7 @@ import com.github.sv.mapper.ModelMapper;
 import com.github.sv.service.impl.ManServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.querydsl.QPageRequest;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,7 +27,8 @@ public class ManLibRestController {
     }
 
     @RequestMapping(method = RequestMethod.GET)
-    public List<ManDTO> getAllMan(Pageable pageable) {//
+    public List<ManDTO> getAllMans(@RequestParam int page, @RequestParam int size) {
+        Pageable pageable = new QPageRequest(page, size);
         return service.findAll(pageable)
                 .stream()
                 .map(mapper::convertToDto)
@@ -34,8 +36,12 @@ public class ManLibRestController {
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    public ManDTO getMan(@PathVariable Long id) {
-        return mapper.convertToDto(service.findById(id));
+    public String getMan(@PathVariable Long id) {
+        try {
+            return mapper.convertToDto(service.findById(id)).toString();
+        } catch (com.github.sv.exception.NotFoundException e) {
+            return "Не найдено";
+        }
     }
 
     @RequestMapping(method = RequestMethod.POST)
@@ -57,14 +63,13 @@ public class ManLibRestController {
         try {
             service.deleteById(id);
             return "Успешно";
-        }catch (NotFoundException e){
+        } catch (NotFoundException e) {
             return "Не найдено";
         }
-//        return mapper.convertToDto(service.delete(service.findById(id).get()));
     }
 
-    @RequestMapping(value = "/count",method = RequestMethod.GET)
-    public long getNumElemDB(){
+    @RequestMapping(value = "/count", method = RequestMethod.GET)
+    public long count() {
         return service.count();
     }
 }

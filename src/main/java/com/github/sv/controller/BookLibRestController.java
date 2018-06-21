@@ -1,10 +1,11 @@
 package com.github.sv.controller;
 
 import com.github.sv.dto.BookDTO;
+import com.github.sv.exception.NotFoundException;
 import com.github.sv.mapper.ModelMapper;
 import com.github.sv.service.impl.BookServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.querydsl.QPageRequest;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -12,7 +13,7 @@ import java.util.stream.Collectors;
 
 
 @RestController
-@RequestMapping("lib/books")
+@RequestMapping(value = "lib/books")
 public class BookLibRestController {
 
     private final BookServiceImpl service;
@@ -27,9 +28,9 @@ public class BookLibRestController {
     }
 
 
-
     @RequestMapping(method = RequestMethod.GET)
-    public List<BookDTO> getAllBooks(Pageable pageable) {//SpringDataWebProperties.
+    public List<BookDTO> getAllBooks(@RequestParam int page, @RequestParam int size) {
+        QPageRequest pageable = new QPageRequest(page, size);
         return service.findAll(pageable)
                 .stream()
                 .map(mapper::convertToDto)
@@ -37,8 +38,14 @@ public class BookLibRestController {
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    public BookDTO getBook(@PathVariable Long id) {
-        return mapper.convertToDto(service.findById(id));
+    @ResponseBody
+    public String getBook(@PathVariable Long id) {
+        try {
+            return mapper.convertToDto(service.findById(id)).toString();
+        } catch (NotFoundException e) {
+            return "Не найдено";
+        }
+
     }
 
     @RequestMapping(method = RequestMethod.POST)
@@ -57,13 +64,13 @@ public class BookLibRestController {
         try {
             service.deleteById(id);
             return "Успешно";
-        }catch (Exception e){
+        } catch (Exception e) {
             return "Не найдено";
         }
     }
 
     @RequestMapping(value = "/count", method = RequestMethod.GET)
-    public long count(){
+    public long count() {
         return service.count();
     }
 }
