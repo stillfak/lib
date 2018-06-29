@@ -5,19 +5,25 @@ import com.github.sv.exception.NotFoundException;
 import com.github.sv.mapper.ModelMapper;
 import com.github.sv.service.impl.BookServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.querydsl.QPageRequest;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
-
+/**
+ * В классе реализованы базовые методы взаимодействия
+ * Админестратора с БД
+ *
+ * @author Gavrikov V. 15It18
+ */
 @RestController
 @RequestMapping(value = "lib/books")
 public class BookLibRestController {
 
     private final BookServiceImpl service;
-
+    /**
+     * конвертирует обьект DTO в сущность БД и обратно
+     */
     private final ModelMapper mapper;
 
 
@@ -27,48 +33,76 @@ public class BookLibRestController {
         this.mapper = mapper;
     }
 
-
+    /**
+     * Дает доступ к просмотру страницы со списком книг
+     *
+     * @param pageable  конфигурирует возвращаемый результат (нномер страницы и размер страницы)
+     * @return страница содержащая объекты BookDTO
+     */
     @RequestMapping(method = RequestMethod.GET)
-    public List<BookDTO> getAllBooks(@RequestParam int page, @RequestParam int size) {
-        QPageRequest pageable = new QPageRequest(page, size);
+    public Page<BookDTO> getAllBooks(Pageable pageable) {
         return service.findAll(pageable)
-                .stream()
-                .map(mapper::convertToDto)
-                .collect(Collectors.toList());
+                .map(mapper::convertToDto);
     }
 
+    /**
+     * Дает доступ к просмотру одной книги.
+     *
+     * @param id уникальный идентификатор
+     * @return книга в виде объекта передачи данных(DTO - data transfer object)
+     */
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    @ResponseBody
-    public String getBook(@PathVariable Long id) {
-        try {
-            return mapper.convertToDto(service.findById(id)).toString();
-        } catch (NotFoundException e) {
-            return "Не найдено";
-        }
-
+    public BookDTO getBook(@PathVariable Long id) {
+        return mapper.convertToDto(service.findById(id));
     }
+
+    /**
+     * Добавляет с базу данных новую книгу
+     *
+     * @param newBook книга c id = null
+     * @return книга с добавленная в БД с id != null
+     */
 
     @RequestMapping(method = RequestMethod.POST)
     public BookDTO add(@RequestBody BookDTO newBook) {
-        return mapper.convertToDto(service.add(mapper.convertToEnable(newBook)));
+        return mapper.convertToDto(service.addOrUpdate(mapper.convertToEnable(newBook)));
     }
 
+    /**
+     * обновит информацию о книге
+     *
+     * @param id  уникальный идентификатор
+     * @param editBook обновленная информация о книге
+     * @return обновленная информациия  о книге добавленная в бд
+     */
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
     public BookDTO edit(@PathVariable Long id,
                         @RequestBody BookDTO editBook) {
-        return mapper.convertToDto(service.update(mapper.convertToEnable(editBook)));
+        editBook.setId(id);
+        return mapper.convertToDto(service.addOrUpdate(mapper.convertToEnable(editBook)));
     }
 
+    /**
+     * Удалит книгу из БД
+     *
+     * @param id уникальный идентификатор
+     * @return результат удаления "успешный" или "ошибка"
+     */
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     public String delete(@PathVariable Long id) {
         try {
             service.deleteById(id);
-            return "Успешно";
-        } catch (Exception e) {
-            return "Не найдено";
+            return "Удален " + id;
+        } catch (EmptyResultDataAccessException e) {
+//            e.printStackTrace();
+            return "Не удален " + id + " " + new NotFoundException(404).getMessage();
         }
     }
 
+    /**
+     * Колличество сущьностей в БД
+     * @return колличество сущьностей в БД
+     */
     @RequestMapping(value = "/count", method = RequestMethod.GET)
     public long count() {
         return service.count();

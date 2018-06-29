@@ -5,12 +5,9 @@ import com.github.sv.exception.NotFoundException;
 import com.github.sv.mapper.ModelMapper;
 import com.github.sv.service.impl.ManServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.querydsl.QPageRequest;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("lib/mans")
@@ -27,26 +24,19 @@ public class ManLibRestController {
     }
 
     @RequestMapping(method = RequestMethod.GET)
-    public List<ManDTO> getAllMans(@RequestParam int page, @RequestParam int size) {
-        Pageable pageable = new QPageRequest(page, size);
+    public Page<ManDTO> getAllMans(Pageable pageable) {
         return service.findAll(pageable)
-                .stream()
-                .map(mapper::convertToDto)
-                .collect(Collectors.toList());
+                .map(mapper::convertToDto);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    public String getMan(@PathVariable Long id) {
-        try {
-            return mapper.convertToDto(service.findById(id)).toString();
-        } catch (com.github.sv.exception.NotFoundException e) {
-            return "Не найдено";
-        }
+    public ManDTO getMan(@PathVariable Long id) {
+        return mapper.convertToDto(service.findById(id));
     }
 
     @RequestMapping(method = RequestMethod.POST)
     public ManDTO add(@RequestBody ManDTO newMan) {
-        return mapper.convertToDto(service.add(mapper.convertToEnable(newMan)));
+        return mapper.convertToDto(service.addOrUpdate(mapper.convertToEnable(newMan)));
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
@@ -54,7 +44,7 @@ public class ManLibRestController {
                        @RequestBody ManDTO editMan) {
         editMan.setId(id);
         return mapper.convertToDto(
-                service.update(
+                service.addOrUpdate(
                         mapper.convertToEnable(editMan)));
     }
 
